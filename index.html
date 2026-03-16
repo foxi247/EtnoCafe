@@ -3206,16 +3206,25 @@ async function renderWaitersAdmin() {
   </div>`).join('');
 }
 async function resetOrders() {
-  if (!confirm('Вы уверены? Все заказы будут удалены навсегда. Это действие нельзя отменить.')) return;
+  if (!confirm('Вы уверены? Все заказы и аналитика будут удалены навсегда. Блюда, категории и настройки — не тронуты.')) return;
   if (!confirm('Последнее подтверждение: удалить ВСЕ заказы из базы данных?')) return;
   try {
-    // Delete all orders (PostgREST requires a filter; use neq trick to match all)
-    await supa('orders?id=neq.00000000-0000-0000-0000-000000000000',{method:'DELETE',prefer:'return=minimal'});
-    showToast('Все заказы удалены ✓');
+    // id=gt.0 matches all rows (SERIAL integer id > 0)
+    const results = await Promise.allSettled([
+      supa('orders?id=gt.0', {method:'DELETE', prefer:'return=minimal'}),
+      supa('analytics_events?id=gt.0', {method:'DELETE', prefer:'return=minimal'}),
+      supa('waiter_calls?id=gt.0', {method:'DELETE', prefer:'return=minimal'}),
+    ]);
+    const failed = results.filter(r => r.status === 'rejected');
+    if (failed.length > 0) {
+      showToast('Частичная ошибка — попробуйте ещё раз', 'error');
+    } else {
+      showToast('✅ Все заказы и отчёты удалены');
+    }
     await loadAdminOrders();
     updateAdminStats();
   } catch(e) {
-    showToast('Ошибка удаления: ' + (e.message||'неизвестная'));
+    showToast('Ошибка: ' + (e.message||'неизвестная'), 'error');
   }
 }
 

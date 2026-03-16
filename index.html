@@ -1273,6 +1273,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
               <div class="admin-card-title">Тексты на сайте</div>
               <div class="form-row"><label class="form-label">Экран загрузки — название (intro)</label><input type="text" class="form-input" id="s-intro-logo" placeholder="Кайтаги"></div>
               <div class="form-row"><label class="form-label">Экран загрузки — подпись (intro)</label><input type="text" class="form-input" id="s-intro-sub" placeholder="Даргинская кухня · Элиста"></div>
+              <div class="form-row"><label class="form-label">Заголовок вкладки &amp; поисковая выдача (title)</label><input type="text" class="form-input" id="s-meta-title" placeholder="Кайтаги — Кафе даргинской кухни"></div>
+              <div class="form-row"><label class="form-label">Описание в поиске (meta description)</label><textarea class="form-textarea" id="s-meta-desc" style="min-height:60px;" placeholder="Кафе Кайтаги — атмосферное место с подлинной даргинской кухней..."></textarea></div>
               <div class="form-row"><label class="form-label">Слоган Hero</label><input type="text" class="form-input" id="s-tagline" placeholder="Подлинные вкусы Дагестана"></div>
               <div class="form-row"><label class="form-label">Описание Hero</label><textarea class="form-textarea" id="s-herodesc" style="min-height:70px;"></textarea></div>
               <div class="form-row"><label class="form-label">О нас (абзац 1)</label><textarea class="form-textarea" id="s-about1"></textarea></div>
@@ -1643,6 +1645,8 @@ function esc(s) {
 // ═══════════════════════════════════════════════
 const SUPA_URL = 'https://jzomcwnyejkvnezcojpf.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6b21jd255ZWprdm5lemNvanBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzk0NDIsImV4cCI6MjA4ODgxNTQ0Mn0.5uWQKXnKE4TfCjgMreMcv9QepInWlcsIGBvAL0Yv8KE';
+const VAPID_PUBLIC_KEY = 'BM-MSF7NVsYVQTBm2AjoKpHoxTpJkzkptvr312mmyT9t-051QUt5yYKqUOxhVZMQUFKDxt9ias7Gpa_U5E8J7gA';
+const PUSH_EDGE_URL = SUPA_URL + '/functions/v1/send-push';
 const CART_KEY = 'kaytagi_cart_v2';
 const AUTH_KEY = 'kaytagi_auth_v2';
 const TABLE_KEY = 'kaytagi_table_v2';
@@ -1779,6 +1783,7 @@ const DEFAULT_DATA = {
     adminEmail:"admin@kaytagi.ru", adminPass:"admin123",
     introLogo:"Кайтаги", introSub:"Даргинская кухня · Элиста",
     openTime:"", closeTime:"", tablesCount:10,
+    metaTitle:"Кайтаги — Кафе даргинской кухни", metaDesc:"Кафе Кайтаги — атмосферное место с подлинной даргинской кухней. Хинкал, чуду, ботишал. Элиста, Калмыкия.",
   },
   categories:[], dishes:[], gallery:[], reviews:[], promotions:[]
 };
@@ -1822,6 +1827,8 @@ async function loadFromSupabase() {
         openTime:raw.open_time||'',
         closeTime:raw.close_time||'',
         tablesCount:raw.tables_count||10,
+        metaTitle:raw.meta_title||DEFAULT_DATA.settings.metaTitle,
+        metaDesc:raw.meta_desc||DEFAULT_DATA.settings.metaDesc,
       },
       categories:(categories||[]).map(c=>({id:c.id,name:c.name,isActive:c.is_active})),
       dishes:(dishes||[]).map(d=>({
@@ -1845,7 +1852,8 @@ async function saveSettingsOnly(s) {
     hero_img:s.heroImg,about_img:s.aboutImg,admin_email:s.adminEmail,admin_pass:s.adminPass,
     waiters_enabled:s.waitersEnabled!==false,
     intro_logo:s.introLogo||'',intro_sub:s.introSub||'',
-    open_time:s.openTime||null,close_time:s.closeTime||null,tables_count:s.tablesCount||10
+    open_time:s.openTime||null,close_time:s.closeTime||null,tables_count:s.tablesCount||10,
+    meta_title:s.metaTitle||'',meta_desc:s.metaDesc||''
   }});
 }
 
@@ -1875,6 +1883,8 @@ async function reloadDB(includeHidden=false) {
     openTime:raw.open_time||'',
     closeTime:raw.close_time||'',
     tablesCount:raw.tables_count||10,
+    metaTitle:raw.meta_title||DEFAULT_DATA.settings.metaTitle,
+    metaDesc:raw.meta_desc||DEFAULT_DATA.settings.metaDesc,
   };
   DB.categories=(categories||[]).map(c=>({id:c.id,name:c.name,isActive:c.is_active}));
   DB.dishes=(dishes||[]).map(d=>({
@@ -1923,6 +1933,60 @@ async function sbAddWaiter(name,login,password){return await supa('waiters',{met
 async function sbDeleteWaiter(id){return await supa('waiters?id=eq.'+id,{method:'DELETE',prefer:'return=minimal'});}
 async function sbGetWaiters(){return await supa('waiters?order=id.asc');}
 async function sbSetWaiterOnline(id,isOnline){return await supa('waiters?id=eq.'+id,{method:'PATCH',prefer:'return=minimal',body:{is_online:isOnline}});}
+async function sbSavePushSub(waiterId, subscription){return await supa('push_subscriptions',{method:'POST',body:{waiter_id:waiterId,subscription,user_agent:navigator.userAgent}});}
+async function sbDeletePushSub(waiterId){return await supa('push_subscriptions?waiter_id=eq.'+waiterId,{method:'DELETE',prefer:'return=minimal'});}
+
+async function subscribePush(waiterId) {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return;
+    const reg = await navigator.serviceWorker.ready;
+    // Unsubscribe existing first
+    const existing = await reg.pushManager.getSubscription();
+    if (existing) await existing.unsubscribe();
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+    await sbDeletePushSub(waiterId).catch(()=>{});
+    await sbSavePushSub(waiterId, sub.toJSON());
+    console.log('[Push] Subscribed successfully');
+  } catch(e) {
+    console.warn('[Push] Subscribe failed:', e);
+  }
+}
+
+async function unsubscribePush(waiterId) {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) await sub.unsubscribe();
+    await sbDeletePushSub(waiterId).catch(()=>{});
+  } catch(e) {}
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const pad = base64String.length % 4 ? 4 - base64String.length % 4 : 0;
+  const base64 = (base64String + '='.repeat(pad)).replace(/-/g,'+').replace(/_/g,'/');
+  const raw = atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i=0;i<raw.length;i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+async function sendPushToWaiters(title, body, url) {
+  try {
+    await fetch(PUSH_EDGE_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+SUPA_KEY},
+      body: JSON.stringify({title, body, url})
+    });
+  } catch(e) {
+    console.warn('[Push] Send failed:', e);
+  }
+}
 
 // Orders CRUD
 async function sbCreateOrder(tableNumber,items,total,guestSession,comment=''){
@@ -2236,6 +2300,12 @@ async function confirmOrder() {
     closeCart();
     clearCart();
     showOrderSuccess(tableNum);
+    // Send Web Push to online waiters (fire and forget)
+    sendPushToWaiters(
+      '🍽️ Новый заказ!',
+      `Стол ${tableNum} · ${items.length} поз. · ${total} ₽`,
+      window.location.origin
+    );
   } else {
     showToast('Ошибка отправки заказа. Попробуйте ещё раз.', 'error');
   }
@@ -2472,6 +2542,10 @@ function applySettings() {
   const hd = document.getElementById('hero-desc'); if(hd&&s.herodesc) hd.textContent=s.herodesc;
   const il = document.getElementById('intro-logo'); if(il) il.textContent=s.introLogo||DEFAULT_DATA.settings.introLogo;
   const is_ = document.getElementById('intro-sub'); if(is_) is_.textContent=s.introSub||DEFAULT_DATA.settings.introSub;
+  // Update page title and meta description from admin settings
+  if(s.metaTitle) document.title = s.metaTitle;
+  const metaDescEl = document.querySelector('meta[name="description"]');
+  if(metaDescEl && s.metaDesc) metaDescEl.setAttribute('content', s.metaDesc);
   applyCafeStatus();
 }
 
@@ -3003,6 +3077,8 @@ function loadSettingsForm(){
   document.getElementById('s-open-time').value=s.openTime||'';
   document.getElementById('s-close-time').value=s.closeTime||'';
   document.getElementById('s-tables-count').value=s.tablesCount||10;
+  document.getElementById('s-meta-title').value=s.metaTitle||'';
+  document.getElementById('s-meta-desc').value=s.metaDesc||'';
   document.getElementById('s-heroimgurl').value=s.heroImg&&!s.heroImg.startsWith('data:')?s.heroImg:'';
   document.getElementById('s-aboutimgurl').value=s.aboutImg&&!s.aboutImg.startsWith('data:')?s.aboutImg:'';
   if(s.heroImg){document.getElementById('hero-img-preview').src=s.heroImg;document.getElementById('hero-img-preview-wrap').style.display='block';}
@@ -3017,7 +3093,7 @@ async function saveSettings(){
   aboutImgPreview._uploadedData=null;
   const newEmail=document.getElementById('s-new-email').value.trim();
   const newPass=document.getElementById('s-new-pass').value;
-  DB.settings={...DB.settings,phone:document.getElementById('s-phone').value,whatsapp:document.getElementById('s-whatsapp').value.replace(/[^0-9]/g,''),telegram:document.getElementById('s-telegram').value,address:document.getElementById('s-address').value,hours:document.getElementById('s-hours').value,mapUrl:document.getElementById('s-mapurl').value,tagline:document.getElementById('s-tagline').value,herodesc:document.getElementById('s-herodesc').value,about1:document.getElementById('s-about1').value,about2:document.getElementById('s-about2').value,about3:document.getElementById('s-about3').value,heroImg,aboutImg,adminEmail:newEmail||DB.settings.adminEmail,adminPass:newPass||DB.settings.adminPass,introLogo:document.getElementById('s-intro-logo').value.trim()||DEFAULT_DATA.settings.introLogo,introSub:document.getElementById('s-intro-sub').value.trim()||DEFAULT_DATA.settings.introSub,openTime:document.getElementById('s-open-time').value||'',closeTime:document.getElementById('s-close-time').value||'',tablesCount:parseInt(document.getElementById('s-tables-count').value)||10};
+  DB.settings={...DB.settings,phone:document.getElementById('s-phone').value,whatsapp:document.getElementById('s-whatsapp').value.replace(/[^0-9]/g,''),telegram:document.getElementById('s-telegram').value,address:document.getElementById('s-address').value,hours:document.getElementById('s-hours').value,mapUrl:document.getElementById('s-mapurl').value,tagline:document.getElementById('s-tagline').value,herodesc:document.getElementById('s-herodesc').value,about1:document.getElementById('s-about1').value,about2:document.getElementById('s-about2').value,about3:document.getElementById('s-about3').value,heroImg,aboutImg,adminEmail:newEmail||DB.settings.adminEmail,adminPass:newPass||DB.settings.adminPass,introLogo:document.getElementById('s-intro-logo').value.trim()||DEFAULT_DATA.settings.introLogo,introSub:document.getElementById('s-intro-sub').value.trim()||DEFAULT_DATA.settings.introSub,openTime:document.getElementById('s-open-time').value||'',closeTime:document.getElementById('s-close-time').value||'',tablesCount:parseInt(document.getElementById('s-tables-count').value)||10,metaTitle:document.getElementById('s-meta-title').value.trim()||DEFAULT_DATA.settings.metaTitle,metaDesc:document.getElementById('s-meta-desc').value.trim()||DEFAULT_DATA.settings.metaDesc};
   await saveSettingsOnly(DB.settings);
   applyAll();
   showToast('✅ Настройки сохранены!');
@@ -3563,17 +3639,20 @@ async function doWaiterLogin() {
     setWaiterSession(currentWaiter);
     await sbSetWaiterOnline(currentWaiter.id, true);
     showWaiterDashboard();
-    // Request notification permission for push alerts
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
+    // Subscribe to Web Push (handles permission request internally)
+    subscribePush(currentWaiter.id);
   } else {
     err.textContent='Неверный логин или пароль';
     setTimeout(()=>err.textContent='',3000);
   }
 }
 async function logoutWaiter() {
-  if (currentWaiter) await sbSetWaiterOnline(currentWaiter.id, false).catch(()=>{});
+  if (currentWaiter) {
+    await Promise.all([
+      sbSetWaiterOnline(currentWaiter.id, false).catch(()=>{}),
+      unsubscribePush(currentWaiter.id).catch(()=>{})
+    ]);
+  }
   currentWaiter=null; clearWaiterSession();
   document.getElementById('waiter-login').style.display='flex';
   document.getElementById('waiter-dashboard').style.display='none';

@@ -95,8 +95,9 @@ a{color:inherit;text-decoration:none}
 #mobile-menu.open{opacity:1;visibility:visible}
 #mobile-menu a{font-family:var(--font-display);font-size:42px;font-weight:300;color:var(--cream2);letter-spacing:.05em;transition:color .3s}
 #mobile-menu a:hover,#mobile-menu a:active{color:var(--gold)}
-.mm-social{display:flex;gap:20px;margin-top:8px}
-.mm-social a{font-size:13px;font-family:var(--font-body);letter-spacing:.15em;text-transform:uppercase;color:var(--text3)}
+.mm-social{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center;max-width:320px;padding:0 16px}
+.mm-social a{font-size:11px;font-family:var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:var(--text3);padding:10px 22px;border:1px solid rgba(212,175,100,.25);border-radius:100px;text-align:center;white-space:nowrap;transition:color .3s,border-color .3s}
+.mm-social a:hover,.mm-social a:active{color:var(--gold);border-color:rgba(212,175,100,.6)}
 
 /* ── HERO ────────────────────────────── */
 #hero{position:relative;height:100svh;min-height:600px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;padding:0 24px;text-align:center}
@@ -689,17 +690,21 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
 #cafe-closed-banner span{opacity:.75;font-weight:400;margin-left:8px}
 
 /* ── PROMOTIONS SECTION ── */
-#promotions{background:var(--bg3);display:none;padding:var(--section-pad) 0}
+#promotions{background:var(--bg3);display:none;padding:96px 24px}
 .promo-inner{max-width:1100px;margin:0 auto}
-.promo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:48px}
-.promo-card{position:relative;border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);border:1px solid var(--border);transition:var(--tr)}
-.promo-card:hover{transform:translateY(-4px);border-color:rgba(212,175,100,.35);box-shadow:0 24px 48px rgba(0,0,0,.35),var(--shadow-gold)}
-.promo-img{width:100%;height:180px;object-fit:cover;display:block}
-.promo-img-ph{width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,var(--bg3),var(--surface2))}
-.promo-badge-label{position:absolute;top:14px;right:14px;background:var(--gold);color:var(--bg);padding:5px 14px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.06em;box-shadow:0 4px 12px rgba(0,0,0,.3)}
-.promo-body{padding:20px 22px}
-.promo-title{font-family:var(--font-display);font-size:22px;color:var(--cream);margin-bottom:8px}
-.promo-desc{font-size:13px;color:var(--text2);line-height:1.65}
+.promo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;margin-top:48px}
+@media(max-width:600px){.promo-grid{grid-template-columns:1fr}}
+.promo-card{position:relative;border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);border:1px solid var(--border);transition:var(--tr);display:flex;flex-direction:column}
+.promo-card:hover{transform:translateY(-6px);border-color:rgba(212,175,100,.45);box-shadow:0 32px 64px rgba(0,0,0,.45),var(--shadow-gold)}
+.promo-img{width:100%;height:200px;object-fit:cover;display:block;transition:transform .5s ease}
+.promo-card:hover .promo-img{transform:scale(1.04)}
+.promo-img-ph{width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:56px;background:linear-gradient(135deg,var(--bg3),var(--surface2))}
+.promo-badge-label{position:absolute;top:14px;right:14px;background:var(--gold);color:var(--bg);padding:5px 14px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.06em;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.promo-body{padding:22px 24px;flex:1;display:flex;flex-direction:column;gap:8px}
+.promo-title{font-family:var(--font-display);font-size:24px;color:var(--cream);line-height:1.2}
+.promo-desc{font-size:13px;color:var(--text2);line-height:1.7;flex:1}
+.promo-card-glow{position:absolute;inset:0;background:linear-gradient(to top,rgba(212,175,100,.06) 0%,transparent 60%);pointer-events:none;opacity:0;transition:opacity .4s}
+.promo-card:hover .promo-card-glow{opacity:1}
 
 /* ── WAITER CALL BUTTON ── */
 .bb-btn-call{background:rgba(52,152,219,.15);border-color:rgba(52,152,219,.3)!important;color:#3498db!important}
@@ -722,9 +727,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
 .table-heat-cnt{font-size:10px;margin-top:3px;opacity:.8}
 
 /* ── PROMO CARD IMAGE ── */
-.promo-img-wrap{position:relative;overflow:hidden;height:180px}
-.promo-img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-.promo-badge{position:absolute;top:14px;right:14px;background:var(--gold);color:var(--bg);padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.06em}
+.promo-img-wrap{position:relative;overflow:hidden;height:200px}
+.promo-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.promo-card:hover .promo-img-wrap img{transform:scale(1.04)}
+.promo-badge{position:absolute;top:14px;right:14px;background:var(--gold);color:var(--bg);padding:5px 14px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.06em;box-shadow:0 4px 12px rgba(0,0,0,.4)}
 
 /* ── PWA INSTALL BANNER ── */
 #pwa-install-banner{display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:2000;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:10px 20px;font-size:12px;color:var(--text2);gap:12px;align-items:center;box-shadow:0 8px 32px rgba(0,0,0,.4);white-space:nowrap;cursor:pointer;transition:var(--tr)}
@@ -1184,6 +1190,15 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
         <div class="admin-nav-item" data-panel="promotions_admin" onclick="showPanel('promotions_admin',this)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Акции
         </div>
+        <div class="admin-nav-item" data-panel="footer_settings" onclick="showPanel('footer_settings',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="15" x2="21" y2="15"/></svg>Footer
+        </div>
+        <div class="admin-nav-item" data-panel="hamburger_settings" onclick="showPanel('hamburger_settings',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>Гамбургер меню
+        </div>
+        <div class="admin-nav-item" data-panel="seo_settings" onclick="showPanel('seo_settings',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>SEO / Продвижение
+        </div>
         <div class="admin-nav-section">Ресторан</div>
         <div class="admin-nav-item" data-panel="admin_orders" onclick="showPanel('admin_orders',this)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Заказы <span id="admin-orders-badge" style="background:var(--gold);color:#000;border-radius:100px;font-size:9px;font-weight:700;padding:1px 6px;margin-left:4px;display:none">0</span>
@@ -1275,6 +1290,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
               <div class="form-row"><label class="form-label">Экран загрузки — подпись (intro)</label><input type="text" class="form-input" id="s-intro-sub" placeholder="Даргинская кухня · Элиста"></div>
               <div class="form-row"><label class="form-label">Заголовок вкладки &amp; поисковая выдача (title)</label><input type="text" class="form-input" id="s-meta-title" placeholder="Кайтаги — Кафе даргинской кухни"></div>
               <div class="form-row"><label class="form-label">Описание в поиске (meta description)</label><textarea class="form-textarea" id="s-meta-desc" style="min-height:60px;" placeholder="Кафе Кайтаги — атмосферное место с подлинной даргинской кухней..."></textarea></div>
+              <div class="form-row"><label class="form-label">Надпись над заголовком Hero (например: Элиста, Калмыкия)</label><input type="text" class="form-input" id="s-hero-eyebrow" placeholder="Элиста, Калмыкия"></div>
               <div class="form-row"><label class="form-label">Слоган Hero</label><input type="text" class="form-input" id="s-tagline" placeholder="Подлинные вкусы Дагестана"></div>
               <div class="form-row"><label class="form-label">Описание Hero</label><textarea class="form-textarea" id="s-herodesc" style="min-height:70px;"></textarea></div>
               <div class="form-row"><label class="form-label">О нас (абзац 1)</label><textarea class="form-textarea" id="s-about1"></textarea></div>
@@ -1472,6 +1488,79 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
           </div>
         </div>
 
+        <!-- FOOTER SETTINGS -->
+        <div class="admin-panel" id="panel-footer_settings">
+          <div class="admin-section-title">Настройки Footer</div>
+          <div class="admin-card">
+            <div class="admin-card-title">Основные тексты</div>
+            <div class="form-row"><label class="form-label">Название / Логотип в Footer</label><input type="text" class="form-input" id="fs-logo" placeholder="Кайтаги"></div>
+            <div class="form-row"><label class="form-label">Подпись под логотипом (tagline)</label><input type="text" class="form-input" id="fs-tagline" placeholder="Даргинская кухня · Элиста"></div>
+            <div class="form-row"><label class="form-label">Копирайт (© строка)</label><input type="text" class="form-input" id="fs-copy" placeholder="© 2025 Кафе «Кайтаги»"></div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title">Ссылки в Footer (названия пунктов)</div>
+            <div class="form-row"><label class="form-label">Ссылка 1 (О нас)</label><input type="text" class="form-input" id="fs-nav1" placeholder="О нас"></div>
+            <div class="form-row"><label class="form-label">Ссылка 2 (Меню)</label><input type="text" class="form-input" id="fs-nav2" placeholder="Меню"></div>
+            <div class="form-row"><label class="form-label">Ссылка 3 (Отзывы)</label><input type="text" class="form-input" id="fs-nav3" placeholder="Отзывы"></div>
+            <div class="form-row"><label class="form-label">Ссылка 4 (Галерея)</label><input type="text" class="form-input" id="fs-nav4" placeholder="Галерея"></div>
+            <div class="form-row"><label class="form-label">Ссылка 5 (Контакты)</label><input type="text" class="form-input" id="fs-nav5" placeholder="Контакты"></div>
+          </div>
+          <div style="margin-top:4px;">
+            <button class="admin-btn admin-btn-primary" onclick="saveFooterSettings()">💾 Сохранить Footer</button>
+          </div>
+        </div>
+
+        <!-- HAMBURGER MENU SETTINGS -->
+        <div class="admin-panel" id="panel-hamburger_settings">
+          <div class="admin-section-title">Гамбургер меню</div>
+          <div class="admin-card">
+            <div class="admin-card-title">Пункты навигации</div>
+            <div class="form-row"><label class="form-label">Пункт 1 (О нас)</label><input type="text" class="form-input" id="hm-nav1" placeholder="О нас"></div>
+            <div class="form-row"><label class="form-label">Пункт 2 (Меню)</label><input type="text" class="form-input" id="hm-nav2" placeholder="Меню"></div>
+            <div class="form-row"><label class="form-label">Пункт 3 (Отзывы)</label><input type="text" class="form-input" id="hm-nav3" placeholder="Отзывы"></div>
+            <div class="form-row"><label class="form-label">Пункт 4 (Галерея)</label><input type="text" class="form-input" id="hm-nav4" placeholder="Галерея"></div>
+            <div class="form-row"><label class="form-label">Пункт 5 (Контакты)</label><input type="text" class="form-input" id="hm-nav5" placeholder="Контакты"></div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title">Кнопки действий</div>
+            <div class="form-row"><label class="form-label">Кнопка «Позвонить»</label><input type="text" class="form-input" id="hm-call" placeholder="Позвонить"></div>
+            <div class="form-row"><label class="form-label">Кнопка «WhatsApp»</label><input type="text" class="form-input" id="hm-wa" placeholder="WhatsApp"></div>
+          </div>
+          <div style="margin-top:4px;">
+            <button class="admin-btn admin-btn-primary" onclick="saveHamburgerSettings()">💾 Сохранить меню</button>
+          </div>
+        </div>
+
+        <!-- SEO SETTINGS -->
+        <div class="admin-panel" id="panel-seo_settings">
+          <div class="admin-section-title">SEO и продвижение</div>
+          <div class="admin-card">
+            <div class="admin-card-title">Open Graph (социальные сети)</div>
+            <div class="form-row"><label class="form-label">og:title (заголовок для соцсетей)</label><input type="text" class="form-input" id="seo-og-title" placeholder="Кайтаги — Кафе даргинской кухни"></div>
+            <div class="form-row"><label class="form-label">og:description (описание для соцсетей)</label><textarea class="form-textarea" id="seo-og-desc" style="min-height:70px;" placeholder="Подлинные вкусы Дагестана в сердце Элисты"></textarea></div>
+            <div class="form-row"><label class="form-label">og:image (URL картинки для превью)</label><input type="url" class="form-input" id="seo-og-image" placeholder="https://..."></div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title">Мета-теги для поисковиков</div>
+            <div class="form-row"><label class="form-label">Keywords (ключевые слова, через запятую)</label><textarea class="form-textarea" id="seo-keywords" style="min-height:70px;" placeholder="кафе Элиста, даргинская кухня, хинкал, Кайтаги, халяль"></textarea></div>
+            <div class="form-row"><label class="form-label">Robots (индексация)</label><select class="form-select" id="seo-robots">
+              <option value="index, follow">index, follow — индексировать сайт (по умолчанию)</option>
+              <option value="noindex, nofollow">noindex, nofollow — скрыть от поисковиков</option>
+              <option value="index, nofollow">index, nofollow — индексировать страницу, но не следовать по ссылкам</option>
+            </select></div>
+            <div class="form-row"><label class="form-label">Canonical URL (основной адрес сайта)</label><input type="url" class="form-input" id="seo-canonical" placeholder="https://kaytagi.ru"></div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title">Структурированные данные (Schema.org / JSON-LD)</div>
+            <p style="font-size:12px;color:#555;margin-bottom:12px;line-height:1.6;">Помогает Google показывать расширенные результаты: рейтинг, часы работы, адрес прямо в поиске. Оставьте пустым для автоматической генерации.</p>
+            <div class="form-row"><label class="form-label">JSON-LD (структурированные данные)</label><textarea class="form-textarea" id="seo-jsonld" style="min-height:160px;font-family:monospace;font-size:12px;" placeholder='{"@context":"https://schema.org","@type":"Restaurant",...}'></textarea></div>
+            <button class="admin-btn admin-btn-ghost" style="margin-top:8px;" onclick="generateAutoJsonLd()">⚡ Сгенерировать автоматически</button>
+          </div>
+          <div style="margin-top:4px;">
+            <button class="admin-btn admin-btn-primary" onclick="saveSeoSettings()">💾 Сохранить SEO</button>
+          </div>
+        </div>
+
         <!-- ADMIN ORDERS -->
         <div class="admin-panel" id="panel-admin_orders">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
@@ -1655,6 +1744,7 @@ const WAITER_KEY = 'kaytagi_waiter_v2';
 const WAITER_MODE_KEY = 'kaytagi_waiter_mode_v1';
 const TABLE_EXPIRES_KEY = 'kaytagi_table_expires_v2';
 const CALL_COOLDOWN_KEY = 'kaytagi_call_cd_v1';
+const EXT_SETTINGS_KEY = 'kaytagi_ext_v1';
 
 async function supa(path, options={}) {
   try {
@@ -1897,6 +1987,29 @@ async function reloadDB(includeHidden=false) {
   DB.reviews=(reviews||[]).map(r=>({id:r.id,author:r.author,rating:r.rating,text:r.text,date:r.date,visible:r.visible}));
   DB.promotions=(promotions||[]).map(p=>({id:p.id,title:p.title,description:p.description,image:p.image,badgeText:p.badge_text,isActive:p.is_active}));
   return DB;
+}
+
+// ═══════════════════════════════════════════════
+// EXTENDED SETTINGS (localStorage — hero eyebrow, footer, hamburger, SEO)
+// ═══════════════════════════════════════════════
+const EXT_DEFAULTS = {
+  heroEyebrow: 'Элиста, Калмыкия',
+  footerLogo: 'Кайтаги',
+  footerTagline: 'Даргинская кухня · Элиста',
+  footerCopy: '© 2025 Кафе «Кайтаги»',
+  fsNav1: 'О нас', fsNav2: 'Меню', fsNav3: 'Отзывы', fsNav4: 'Галерея', fsNav5: 'Контакты',
+  hmNav1: 'О нас', hmNav2: 'Меню', hmNav3: 'Отзывы', hmNav4: 'Галерея', hmNav5: 'Контакты',
+  hmCall: 'Позвонить', hmWa: 'WhatsApp',
+  seoOgTitle: '', seoOgDesc: '', seoOgImage: '',
+  seoKeywords: '', seoRobots: 'index, follow', seoCanonical: '', seoJsonLd: ''
+};
+let EXT = {};
+function loadExtSettings() {
+  try { EXT = Object.assign({}, EXT_DEFAULTS, JSON.parse(localStorage.getItem(EXT_SETTINGS_KEY)||'{}')); }
+  catch(e) { EXT = Object.assign({}, EXT_DEFAULTS); }
+}
+function saveExtSettings() {
+  localStorage.setItem(EXT_SETTINGS_KEY, JSON.stringify(EXT));
 }
 
 // Category CRUD
@@ -2379,6 +2492,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   initScrollReveal();
 
+  loadExtSettings();
   try { DB = await loadFromSupabase(); } catch(e) { DB = JSON.parse(JSON.stringify(DEFAULT_DATA)); }
   waiterModeEnabled = DB.settings.waitersEnabled !== false;
   activeCat = (DB.categories.find(c=>c.isActive)||DB.categories[0]||{id:1}).id;
@@ -2546,7 +2660,92 @@ function applySettings() {
   if(s.metaTitle) document.title = s.metaTitle;
   const metaDescEl = document.querySelector('meta[name="description"]');
   if(metaDescEl && s.metaDesc) metaDescEl.setAttribute('content', s.metaDesc);
+  // Apply extended settings (hero eyebrow, footer, hamburger, SEO)
+  applyExtSettings();
   applyCafeStatus();
+}
+
+function applyExtSettings() {
+  // Hero eyebrow
+  const eyebrow = document.getElementById('hero-eyebrow');
+  if (eyebrow && EXT.heroEyebrow) eyebrow.textContent = EXT.heroEyebrow;
+  // Footer
+  const fLogo = document.querySelector('.footer-logo');
+  if (fLogo && EXT.footerLogo) fLogo.textContent = EXT.footerLogo;
+  const fTagline = document.querySelector('.footer-tagline');
+  if (fTagline && EXT.footerTagline) fTagline.textContent = EXT.footerTagline;
+  const fCopy = document.querySelector('.footer-copy');
+  if (fCopy && EXT.footerCopy) fCopy.textContent = EXT.footerCopy;
+  // Footer nav links
+  const fLinks = document.querySelectorAll('.footer-links a');
+  const fNavKeys = ['fsNav1','fsNav2','fsNav3','fsNav4','fsNav5'];
+  fNavKeys.forEach((k,i) => { if(fLinks[i] && EXT[k]) fLinks[i].textContent = EXT[k]; });
+  // Mobile menu nav links
+  const mmLinks = document.querySelectorAll('#mobile-menu > a');
+  const hmNavKeys = ['hmNav1','hmNav2','hmNav3','hmNav4','hmNav5'];
+  hmNavKeys.forEach((k,i) => { if(mmLinks[i] && EXT[k]) mmLinks[i].textContent = EXT[k]; });
+  // Mobile menu buttons
+  const mmCallEl = document.getElementById('mm-call');
+  if (mmCallEl && EXT.hmCall) mmCallEl.textContent = EXT.hmCall;
+  const mmWaEl = document.getElementById('mm-wa');
+  if (mmWaEl && EXT.hmWa) mmWaEl.textContent = EXT.hmWa;
+  // SEO meta tags
+  applySeoMeta();
+}
+
+function applySeoMeta() {
+  // og:title
+  let ogTitle = document.querySelector('meta[property="og:title"]');
+  if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property','og:title'); document.head.appendChild(ogTitle); }
+  if (EXT.seoOgTitle) ogTitle.setAttribute('content', EXT.seoOgTitle);
+  // og:description
+  let ogDesc = document.querySelector('meta[property="og:description"]');
+  if (!ogDesc) { ogDesc = document.createElement('meta'); ogDesc.setAttribute('property','og:description'); document.head.appendChild(ogDesc); }
+  if (EXT.seoOgDesc) ogDesc.setAttribute('content', EXT.seoOgDesc);
+  // og:image
+  let ogImg = document.querySelector('meta[property="og:image"]');
+  if (!ogImg) { ogImg = document.createElement('meta'); ogImg.setAttribute('property','og:image'); document.head.appendChild(ogImg); }
+  if (EXT.seoOgImage) ogImg.setAttribute('content', EXT.seoOgImage);
+  // keywords
+  let kwEl = document.querySelector('meta[name="keywords"]');
+  if (!kwEl) { kwEl = document.createElement('meta'); kwEl.setAttribute('name','keywords'); document.head.appendChild(kwEl); }
+  if (EXT.seoKeywords) kwEl.setAttribute('content', EXT.seoKeywords);
+  // robots
+  let robotsEl = document.querySelector('meta[name="robots"]');
+  if (!robotsEl) { robotsEl = document.createElement('meta'); robotsEl.setAttribute('name','robots'); document.head.appendChild(robotsEl); }
+  if (EXT.seoRobots) robotsEl.setAttribute('content', EXT.seoRobots);
+  // canonical
+  let canonEl = document.querySelector('link[rel="canonical"]');
+  if (!canonEl) { canonEl = document.createElement('link'); canonEl.setAttribute('rel','canonical'); document.head.appendChild(canonEl); }
+  if (EXT.seoCanonical) canonEl.setAttribute('href', EXT.seoCanonical);
+  // JSON-LD structured data
+  const existingLd = document.getElementById('seo-jsonld-tag');
+  if (existingLd) existingLd.remove();
+  const jsonLdContent = EXT.seoJsonLd || generateDefaultJsonLd();
+  if (jsonLdContent) {
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'seo-jsonld-tag';
+    script.textContent = jsonLdContent;
+    document.head.appendChild(script);
+  }
+}
+
+function generateDefaultJsonLd() {
+  const s = DB.settings;
+  if (!s || !s.address) return '';
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": s.introLogo || 'Кайтаги',
+    "description": s.herodesc || '',
+    "address": {"@type":"PostalAddress","streetAddress":s.address,"addressLocality":"Элиста","addressCountry":"RU"},
+    "telephone": s.phone || '',
+    "openingHours": s.hours ? [s.hours] : [],
+    "servesCuisine": "Даргинская кухня",
+    "priceRange": "₽₽",
+    "url": EXT.seoCanonical || window.location.origin
+  }, null, 0);
 }
 
 function isCafeOpen() {
@@ -2850,11 +3049,12 @@ function renderPromotions() {
   const active = (DB.promotions||[]).filter(p=>p.isActive);
   if (section) section.style.display = active.length ? 'block' : 'none';
   grid.innerHTML = active.map(p=>`<div class="promo-card">
-    ${p.image?`<div class="promo-img-wrap"><img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy" onerror="this.parentElement.style.display='none'">${p.badgeText?`<span class="promo-badge">${esc(p.badgeText)}</span>`:''}</div>`:''}
+    ${p.image?`<div class="promo-img-wrap" style="overflow:hidden;"><img class="promo-img" src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy" onerror="this.parentElement.style.display='none'">${p.badgeText?`<span class="promo-badge">${esc(p.badgeText)}</span>`:''}</div>`:`<div class="promo-img-ph">${p.badgeText?`<span style="font-size:36px;font-family:var(--font-display);color:var(--gold);">${esc(p.badgeText)}</span>`:'🍽️'}</div>`}
     <div class="promo-body">
       <div class="promo-title">${esc(p.title)}</div>
       ${p.description?`<div class="promo-desc">${esc(p.description)}</div>`:''}
     </div>
+    <div class="promo-card-glow"></div>
   </div>`).join('');
 }
 
@@ -3017,7 +3217,7 @@ function doLogin(){
   } else { err.textContent='Неверный email или пароль'; setTimeout(()=>err.textContent='',3000); }
 }
 
-const PANEL_TITLES={dashboard:'Дашборд',settings:'Настройки сайта',categories:'Категории',dishes:'Блюда',gallery:'Галерея',reviews_admin:'Отзывы',admin_orders:'Заказы',admin_waiters:'Официанты',admin_stoplist:'Стоп-лист',admin_analytics:'Аналитика',promotions_admin:'Акции и предложения'};
+const PANEL_TITLES={dashboard:'Дашборд',settings:'Настройки сайта',categories:'Категории',dishes:'Блюда',gallery:'Галерея',reviews_admin:'Отзывы',admin_orders:'Заказы',admin_waiters:'Официанты',admin_stoplist:'Стоп-лист',admin_analytics:'Аналитика',promotions_admin:'Акции и предложения',footer_settings:'Настройки Footer',hamburger_settings:'Гамбургер меню',seo_settings:'SEO и продвижение'};
 async function showPanel(name,el){
   document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.admin-nav-item').forEach(n=>n.classList.remove('active'));
@@ -3037,6 +3237,9 @@ async function showPanel(name,el){
   if(name==='admin_stoplist'){await renderStoplistAdmin();populateStoplistDishSelect();}
   if(name==='admin_analytics') await renderAnalytics();
   if(name==='promotions_admin') renderAdminPromotions();
+  if(name==='footer_settings') loadFooterForm();
+  if(name==='hamburger_settings') loadHamburgerForm();
+  if(name==='seo_settings') loadSeoForm();
 }
 function toggleAdminSidebar(){
   document.getElementById('admin-sidebar').classList.toggle('admin-sidebar-open');
@@ -3079,6 +3282,7 @@ function loadSettingsForm(){
   document.getElementById('s-tables-count').value=s.tablesCount||10;
   document.getElementById('s-meta-title').value=s.metaTitle||'';
   document.getElementById('s-meta-desc').value=s.metaDesc||'';
+  document.getElementById('s-hero-eyebrow').value=EXT.heroEyebrow||EXT_DEFAULTS.heroEyebrow;
   document.getElementById('s-heroimgurl').value=s.heroImg&&!s.heroImg.startsWith('data:')?s.heroImg:'';
   document.getElementById('s-aboutimgurl').value=s.aboutImg&&!s.aboutImg.startsWith('data:')?s.aboutImg:'';
   if(s.heroImg){document.getElementById('hero-img-preview').src=s.heroImg;document.getElementById('hero-img-preview-wrap').style.display='block';}
@@ -3094,10 +3298,89 @@ async function saveSettings(){
   const newEmail=document.getElementById('s-new-email').value.trim();
   const newPass=document.getElementById('s-new-pass').value;
   DB.settings={...DB.settings,phone:document.getElementById('s-phone').value,whatsapp:document.getElementById('s-whatsapp').value.replace(/[^0-9]/g,''),telegram:document.getElementById('s-telegram').value,address:document.getElementById('s-address').value,hours:document.getElementById('s-hours').value,mapUrl:document.getElementById('s-mapurl').value,tagline:document.getElementById('s-tagline').value,herodesc:document.getElementById('s-herodesc').value,about1:document.getElementById('s-about1').value,about2:document.getElementById('s-about2').value,about3:document.getElementById('s-about3').value,heroImg,aboutImg,adminEmail:newEmail||DB.settings.adminEmail,adminPass:newPass||DB.settings.adminPass,introLogo:document.getElementById('s-intro-logo').value.trim()||DEFAULT_DATA.settings.introLogo,introSub:document.getElementById('s-intro-sub').value.trim()||DEFAULT_DATA.settings.introSub,openTime:document.getElementById('s-open-time').value||'',closeTime:document.getElementById('s-close-time').value||'',tablesCount:parseInt(document.getElementById('s-tables-count').value)||10,metaTitle:document.getElementById('s-meta-title').value.trim()||DEFAULT_DATA.settings.metaTitle,metaDesc:document.getElementById('s-meta-desc').value.trim()||DEFAULT_DATA.settings.metaDesc};
+  // Save hero eyebrow to extended settings
+  EXT.heroEyebrow = document.getElementById('s-hero-eyebrow').value.trim() || EXT_DEFAULTS.heroEyebrow;
+  saveExtSettings();
   await saveSettingsOnly(DB.settings);
   applyAll();
   showToast('✅ Настройки сохранены!');
   updateAdminStats();
+}
+
+// ─── FOOTER SETTINGS ───
+function loadFooterForm() {
+  document.getElementById('fs-logo').value = EXT.footerLogo || EXT_DEFAULTS.footerLogo;
+  document.getElementById('fs-tagline').value = EXT.footerTagline || EXT_DEFAULTS.footerTagline;
+  document.getElementById('fs-copy').value = EXT.footerCopy || EXT_DEFAULTS.footerCopy;
+  document.getElementById('fs-nav1').value = EXT.fsNav1 || EXT_DEFAULTS.fsNav1;
+  document.getElementById('fs-nav2').value = EXT.fsNav2 || EXT_DEFAULTS.fsNav2;
+  document.getElementById('fs-nav3').value = EXT.fsNav3 || EXT_DEFAULTS.fsNav3;
+  document.getElementById('fs-nav4').value = EXT.fsNav4 || EXT_DEFAULTS.fsNav4;
+  document.getElementById('fs-nav5').value = EXT.fsNav5 || EXT_DEFAULTS.fsNav5;
+}
+function saveFooterSettings() {
+  EXT.footerLogo = document.getElementById('fs-logo').value.trim() || EXT_DEFAULTS.footerLogo;
+  EXT.footerTagline = document.getElementById('fs-tagline').value.trim() || EXT_DEFAULTS.footerTagline;
+  EXT.footerCopy = document.getElementById('fs-copy').value.trim() || EXT_DEFAULTS.footerCopy;
+  EXT.fsNav1 = document.getElementById('fs-nav1').value.trim() || EXT_DEFAULTS.fsNav1;
+  EXT.fsNav2 = document.getElementById('fs-nav2').value.trim() || EXT_DEFAULTS.fsNav2;
+  EXT.fsNav3 = document.getElementById('fs-nav3').value.trim() || EXT_DEFAULTS.fsNav3;
+  EXT.fsNav4 = document.getElementById('fs-nav4').value.trim() || EXT_DEFAULTS.fsNav4;
+  EXT.fsNav5 = document.getElementById('fs-nav5').value.trim() || EXT_DEFAULTS.fsNav5;
+  saveExtSettings();
+  applyExtSettings();
+  showToast('✅ Footer сохранён!');
+}
+
+// ─── HAMBURGER MENU SETTINGS ───
+function loadHamburgerForm() {
+  document.getElementById('hm-nav1').value = EXT.hmNav1 || EXT_DEFAULTS.hmNav1;
+  document.getElementById('hm-nav2').value = EXT.hmNav2 || EXT_DEFAULTS.hmNav2;
+  document.getElementById('hm-nav3').value = EXT.hmNav3 || EXT_DEFAULTS.hmNav3;
+  document.getElementById('hm-nav4').value = EXT.hmNav4 || EXT_DEFAULTS.hmNav4;
+  document.getElementById('hm-nav5').value = EXT.hmNav5 || EXT_DEFAULTS.hmNav5;
+  document.getElementById('hm-call').value = EXT.hmCall || EXT_DEFAULTS.hmCall;
+  document.getElementById('hm-wa').value = EXT.hmWa || EXT_DEFAULTS.hmWa;
+}
+function saveHamburgerSettings() {
+  EXT.hmNav1 = document.getElementById('hm-nav1').value.trim() || EXT_DEFAULTS.hmNav1;
+  EXT.hmNav2 = document.getElementById('hm-nav2').value.trim() || EXT_DEFAULTS.hmNav2;
+  EXT.hmNav3 = document.getElementById('hm-nav3').value.trim() || EXT_DEFAULTS.hmNav3;
+  EXT.hmNav4 = document.getElementById('hm-nav4').value.trim() || EXT_DEFAULTS.hmNav4;
+  EXT.hmNav5 = document.getElementById('hm-nav5').value.trim() || EXT_DEFAULTS.hmNav5;
+  EXT.hmCall = document.getElementById('hm-call').value.trim() || EXT_DEFAULTS.hmCall;
+  EXT.hmWa = document.getElementById('hm-wa').value.trim() || EXT_DEFAULTS.hmWa;
+  saveExtSettings();
+  applyExtSettings();
+  showToast('✅ Гамбургер меню сохранено!');
+}
+
+// ─── SEO SETTINGS ───
+function loadSeoForm() {
+  document.getElementById('seo-og-title').value = EXT.seoOgTitle || '';
+  document.getElementById('seo-og-desc').value = EXT.seoOgDesc || '';
+  document.getElementById('seo-og-image').value = EXT.seoOgImage || '';
+  document.getElementById('seo-keywords').value = EXT.seoKeywords || '';
+  document.getElementById('seo-robots').value = EXT.seoRobots || 'index, follow';
+  document.getElementById('seo-canonical').value = EXT.seoCanonical || '';
+  document.getElementById('seo-jsonld').value = EXT.seoJsonLd || '';
+}
+function saveSeoSettings() {
+  EXT.seoOgTitle = document.getElementById('seo-og-title').value.trim();
+  EXT.seoOgDesc = document.getElementById('seo-og-desc').value.trim();
+  EXT.seoOgImage = document.getElementById('seo-og-image').value.trim();
+  EXT.seoKeywords = document.getElementById('seo-keywords').value.trim();
+  EXT.seoRobots = document.getElementById('seo-robots').value || 'index, follow';
+  EXT.seoCanonical = document.getElementById('seo-canonical').value.trim();
+  EXT.seoJsonLd = document.getElementById('seo-jsonld').value.trim();
+  saveExtSettings();
+  applySeoMeta();
+  showToast('✅ SEO настройки сохранены!');
+}
+function generateAutoJsonLd() {
+  const ld = generateDefaultJsonLd();
+  document.getElementById('seo-jsonld').value = ld ? JSON.stringify(JSON.parse(ld), null, 2) : '';
+  showToast('JSON-LD сгенерирован!');
 }
 
 // CATEGORIES

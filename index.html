@@ -1874,6 +1874,13 @@ const DEFAULT_DATA = {
     introLogo:"Кайтаги", introSub:"Даргинская кухня · Элиста",
     openTime:"", closeTime:"", tablesCount:10,
     metaTitle:"Кайтаги — Кафе даргинской кухни", metaDesc:"Кафе Кайтаги — атмосферное место с подлинной даргинской кухней. Хинкал, чуду, ботишал. Элиста, Калмыкия.",
+    heroEyebrow:"Элиста, Калмыкия",
+    footerLogo:"Кайтаги", footerTagline:"Даргинская кухня · Элиста", footerCopy:"© 2025 Кафе «Кайтаги»",
+    fsNav1:"О нас", fsNav2:"Меню", fsNav3:"Отзывы", fsNav4:"Галерея", fsNav5:"Контакты",
+    hmNav1:"О нас", hmNav2:"Меню", hmNav3:"Отзывы", hmNav4:"Галерея", hmNav5:"Контакты",
+    hmCall:"Позвонить", hmWa:"WhatsApp",
+    seoOgTitle:"", seoOgDesc:"", seoOgImage:"",
+    seoKeywords:"", seoRobots:"index, follow", seoCanonical:"", seoJsonLd:"",
   },
   categories:[], dishes:[], gallery:[], reviews:[], promotions:[]
 };
@@ -1919,6 +1926,29 @@ async function loadFromSupabase() {
         tablesCount:raw.tables_count||10,
         metaTitle:raw.meta_title||DEFAULT_DATA.settings.metaTitle,
         metaDesc:raw.meta_desc||DEFAULT_DATA.settings.metaDesc,
+        heroEyebrow:raw.hero_eyebrow||EXT.heroEyebrow||DEFAULT_DATA.settings.heroEyebrow,
+        footerLogo:raw.footer_logo||EXT.footerLogo||DEFAULT_DATA.settings.footerLogo,
+        footerTagline:raw.footer_tagline||EXT.footerTagline||DEFAULT_DATA.settings.footerTagline,
+        footerCopy:raw.footer_copy||EXT.footerCopy||DEFAULT_DATA.settings.footerCopy,
+        fsNav1:raw.footer_nav1||EXT.fsNav1||DEFAULT_DATA.settings.fsNav1,
+        fsNav2:raw.footer_nav2||EXT.fsNav2||DEFAULT_DATA.settings.fsNav2,
+        fsNav3:raw.footer_nav3||EXT.fsNav3||DEFAULT_DATA.settings.fsNav3,
+        fsNav4:raw.footer_nav4||EXT.fsNav4||DEFAULT_DATA.settings.fsNav4,
+        fsNav5:raw.footer_nav5||EXT.fsNav5||DEFAULT_DATA.settings.fsNav5,
+        hmNav1:raw.hm_nav1||EXT.hmNav1||DEFAULT_DATA.settings.hmNav1,
+        hmNav2:raw.hm_nav2||EXT.hmNav2||DEFAULT_DATA.settings.hmNav2,
+        hmNav3:raw.hm_nav3||EXT.hmNav3||DEFAULT_DATA.settings.hmNav3,
+        hmNav4:raw.hm_nav4||EXT.hmNav4||DEFAULT_DATA.settings.hmNav4,
+        hmNav5:raw.hm_nav5||EXT.hmNav5||DEFAULT_DATA.settings.hmNav5,
+        hmCall:raw.hm_call||EXT.hmCall||DEFAULT_DATA.settings.hmCall,
+        hmWa:raw.hm_wa||EXT.hmWa||DEFAULT_DATA.settings.hmWa,
+        seoOgTitle:raw.seo_og_title||EXT.seoOgTitle||'',
+        seoOgDesc:raw.seo_og_desc||EXT.seoOgDesc||'',
+        seoOgImage:raw.seo_og_image||EXT.seoOgImage||'',
+        seoKeywords:raw.seo_keywords||EXT.seoKeywords||'',
+        seoRobots:raw.seo_robots||EXT.seoRobots||'index, follow',
+        seoCanonical:raw.seo_canonical||EXT.seoCanonical||'',
+        seoJsonLd:raw.seo_jsonld||EXT.seoJsonLd||'',
       },
       categories:(categories||[]).map(c=>({id:c.id,name:c.name,isActive:c.is_active})),
       dishes:(dishes||[]).map(d=>({
@@ -1945,6 +1975,35 @@ async function saveSettingsOnly(s) {
     open_time:s.openTime||null,close_time:s.closeTime||null,tables_count:s.tablesCount||10,
     meta_title:s.metaTitle||'',meta_desc:s.metaDesc||''
   }});
+  // Save extended settings in a separate PATCH (new columns — needs SQL migration run first)
+  await saveExtToSupabase(s);
+}
+
+async function saveExtToSupabase(s) {
+  // Separate PATCH so existing settings save never breaks if columns don't exist yet
+  const res = await supa('settings?id=eq.1',{method:'PATCH',prefer:'return=minimal',body:{
+    hero_eyebrow: s.heroEyebrow||'',
+    footer_logo: s.footerLogo||'', footer_tagline: s.footerTagline||'', footer_copy: s.footerCopy||'',
+    footer_nav1: s.fsNav1||'', footer_nav2: s.fsNav2||'', footer_nav3: s.fsNav3||'',
+    footer_nav4: s.fsNav4||'', footer_nav5: s.fsNav5||'',
+    hm_nav1: s.hmNav1||'', hm_nav2: s.hmNav2||'', hm_nav3: s.hmNav3||'',
+    hm_nav4: s.hmNav4||'', hm_nav5: s.hmNav5||'',
+    hm_call: s.hmCall||'', hm_wa: s.hmWa||'',
+    seo_og_title: s.seoOgTitle||'', seo_og_desc: s.seoOgDesc||'', seo_og_image: s.seoOgImage||'',
+    seo_keywords: s.seoKeywords||'', seo_robots: s.seoRobots||'index, follow',
+    seo_canonical: s.seoCanonical||'', seo_jsonld: s.seoJsonLd||''
+  }});
+  // Always mirror to localStorage as fallback
+  EXT = {
+    heroEyebrow:s.heroEyebrow, footerLogo:s.footerLogo, footerTagline:s.footerTagline, footerCopy:s.footerCopy,
+    fsNav1:s.fsNav1, fsNav2:s.fsNav2, fsNav3:s.fsNav3, fsNav4:s.fsNav4, fsNav5:s.fsNav5,
+    hmNav1:s.hmNav1, hmNav2:s.hmNav2, hmNav3:s.hmNav3, hmNav4:s.hmNav4, hmNav5:s.hmNav5,
+    hmCall:s.hmCall, hmWa:s.hmWa,
+    seoOgTitle:s.seoOgTitle, seoOgDesc:s.seoOgDesc, seoOgImage:s.seoOgImage,
+    seoKeywords:s.seoKeywords, seoRobots:s.seoRobots, seoCanonical:s.seoCanonical, seoJsonLd:s.seoJsonLd
+  };
+  saveExtSettings();
+  return res;
 }
 
 async function reloadDB(includeHidden=false) {
@@ -1975,6 +2034,29 @@ async function reloadDB(includeHidden=false) {
     tablesCount:raw.tables_count||10,
     metaTitle:raw.meta_title||DEFAULT_DATA.settings.metaTitle,
     metaDesc:raw.meta_desc||DEFAULT_DATA.settings.metaDesc,
+    heroEyebrow:raw.hero_eyebrow||EXT.heroEyebrow||DEFAULT_DATA.settings.heroEyebrow,
+    footerLogo:raw.footer_logo||EXT.footerLogo||DEFAULT_DATA.settings.footerLogo,
+    footerTagline:raw.footer_tagline||EXT.footerTagline||DEFAULT_DATA.settings.footerTagline,
+    footerCopy:raw.footer_copy||EXT.footerCopy||DEFAULT_DATA.settings.footerCopy,
+    fsNav1:raw.footer_nav1||EXT.fsNav1||DEFAULT_DATA.settings.fsNav1,
+    fsNav2:raw.footer_nav2||EXT.fsNav2||DEFAULT_DATA.settings.fsNav2,
+    fsNav3:raw.footer_nav3||EXT.fsNav3||DEFAULT_DATA.settings.fsNav3,
+    fsNav4:raw.footer_nav4||EXT.fsNav4||DEFAULT_DATA.settings.fsNav4,
+    fsNav5:raw.footer_nav5||EXT.fsNav5||DEFAULT_DATA.settings.fsNav5,
+    hmNav1:raw.hm_nav1||EXT.hmNav1||DEFAULT_DATA.settings.hmNav1,
+    hmNav2:raw.hm_nav2||EXT.hmNav2||DEFAULT_DATA.settings.hmNav2,
+    hmNav3:raw.hm_nav3||EXT.hmNav3||DEFAULT_DATA.settings.hmNav3,
+    hmNav4:raw.hm_nav4||EXT.hmNav4||DEFAULT_DATA.settings.hmNav4,
+    hmNav5:raw.hm_nav5||EXT.hmNav5||DEFAULT_DATA.settings.hmNav5,
+    hmCall:raw.hm_call||EXT.hmCall||DEFAULT_DATA.settings.hmCall,
+    hmWa:raw.hm_wa||EXT.hmWa||DEFAULT_DATA.settings.hmWa,
+    seoOgTitle:raw.seo_og_title||EXT.seoOgTitle||'',
+    seoOgDesc:raw.seo_og_desc||EXT.seoOgDesc||'',
+    seoOgImage:raw.seo_og_image||EXT.seoOgImage||'',
+    seoKeywords:raw.seo_keywords||EXT.seoKeywords||'',
+    seoRobots:raw.seo_robots||EXT.seoRobots||'index, follow',
+    seoCanonical:raw.seo_canonical||EXT.seoCanonical||'',
+    seoJsonLd:raw.seo_jsonld||EXT.seoJsonLd||'',
   };
   DB.categories=(categories||[]).map(c=>({id:c.id,name:c.name,isActive:c.is_active}));
   DB.dishes=(dishes||[]).map(d=>({
@@ -2666,62 +2748,65 @@ function applySettings() {
 }
 
 function applyExtSettings() {
+  // Use DB.settings as source of truth, fall back to EXT (localStorage), then defaults
+  const s = DB.settings;
+  const get = (dbKey, extKey) => s[dbKey] || EXT[extKey] || EXT_DEFAULTS[extKey] || '';
   // Hero eyebrow
   const eyebrow = document.getElementById('hero-eyebrow');
-  if (eyebrow && EXT.heroEyebrow) eyebrow.textContent = EXT.heroEyebrow;
+  if (eyebrow) eyebrow.textContent = get('heroEyebrow','heroEyebrow') || EXT_DEFAULTS.heroEyebrow;
   // Footer
   const fLogo = document.querySelector('.footer-logo');
-  if (fLogo && EXT.footerLogo) fLogo.textContent = EXT.footerLogo;
+  if (fLogo) fLogo.textContent = get('footerLogo','footerLogo') || EXT_DEFAULTS.footerLogo;
   const fTagline = document.querySelector('.footer-tagline');
-  if (fTagline && EXT.footerTagline) fTagline.textContent = EXT.footerTagline;
+  if (fTagline) fTagline.textContent = get('footerTagline','footerTagline') || EXT_DEFAULTS.footerTagline;
   const fCopy = document.querySelector('.footer-copy');
-  if (fCopy && EXT.footerCopy) fCopy.textContent = EXT.footerCopy;
-  // Footer nav links
+  if (fCopy) fCopy.textContent = get('footerCopy','footerCopy') || EXT_DEFAULTS.footerCopy;
+  // Footer nav links (only first 5 — skip admin/waiter links)
   const fLinks = document.querySelectorAll('.footer-links a');
-  const fNavKeys = ['fsNav1','fsNav2','fsNav3','fsNav4','fsNav5'];
-  fNavKeys.forEach((k,i) => { if(fLinks[i] && EXT[k]) fLinks[i].textContent = EXT[k]; });
+  [['fsNav1','fsNav1'],['fsNav2','fsNav2'],['fsNav3','fsNav3'],['fsNav4','fsNav4'],['fsNav5','fsNav5']]
+    .forEach(([dk,ek],i) => { const v=get(dk,ek); if(fLinks[i] && v) fLinks[i].textContent = v; });
   // Mobile menu nav links
   const mmLinks = document.querySelectorAll('#mobile-menu > a');
-  const hmNavKeys = ['hmNav1','hmNav2','hmNav3','hmNav4','hmNav5'];
-  hmNavKeys.forEach((k,i) => { if(mmLinks[i] && EXT[k]) mmLinks[i].textContent = EXT[k]; });
+  [['hmNav1','hmNav1'],['hmNav2','hmNav2'],['hmNav3','hmNav3'],['hmNav4','hmNav4'],['hmNav5','hmNav5']]
+    .forEach(([dk,ek],i) => { const v=get(dk,ek); if(mmLinks[i] && v) mmLinks[i].textContent = v; });
   // Mobile menu buttons
   const mmCallEl = document.getElementById('mm-call');
-  if (mmCallEl && EXT.hmCall) mmCallEl.textContent = EXT.hmCall;
+  if (mmCallEl) mmCallEl.textContent = get('hmCall','hmCall') || EXT_DEFAULTS.hmCall;
   const mmWaEl = document.getElementById('mm-wa');
-  if (mmWaEl && EXT.hmWa) mmWaEl.textContent = EXT.hmWa;
+  if (mmWaEl) mmWaEl.textContent = get('hmWa','hmWa') || EXT_DEFAULTS.hmWa;
   // SEO meta tags
   applySeoMeta();
 }
 
 function applySeoMeta() {
-  // og:title
-  let ogTitle = document.querySelector('meta[property="og:title"]');
-  if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property','og:title'); document.head.appendChild(ogTitle); }
-  if (EXT.seoOgTitle) ogTitle.setAttribute('content', EXT.seoOgTitle);
-  // og:description
-  let ogDesc = document.querySelector('meta[property="og:description"]');
-  if (!ogDesc) { ogDesc = document.createElement('meta'); ogDesc.setAttribute('property','og:description'); document.head.appendChild(ogDesc); }
-  if (EXT.seoOgDesc) ogDesc.setAttribute('content', EXT.seoOgDesc);
-  // og:image
-  let ogImg = document.querySelector('meta[property="og:image"]');
-  if (!ogImg) { ogImg = document.createElement('meta'); ogImg.setAttribute('property','og:image'); document.head.appendChild(ogImg); }
-  if (EXT.seoOgImage) ogImg.setAttribute('content', EXT.seoOgImage);
-  // keywords
-  let kwEl = document.querySelector('meta[name="keywords"]');
-  if (!kwEl) { kwEl = document.createElement('meta'); kwEl.setAttribute('name','keywords'); document.head.appendChild(kwEl); }
-  if (EXT.seoKeywords) kwEl.setAttribute('content', EXT.seoKeywords);
-  // robots
-  let robotsEl = document.querySelector('meta[name="robots"]');
-  if (!robotsEl) { robotsEl = document.createElement('meta'); robotsEl.setAttribute('name','robots'); document.head.appendChild(robotsEl); }
-  if (EXT.seoRobots) robotsEl.setAttribute('content', EXT.seoRobots);
-  // canonical
-  let canonEl = document.querySelector('link[rel="canonical"]');
-  if (!canonEl) { canonEl = document.createElement('link'); canonEl.setAttribute('rel','canonical'); document.head.appendChild(canonEl); }
-  if (EXT.seoCanonical) canonEl.setAttribute('href', EXT.seoCanonical);
-  // JSON-LD structured data
+  const s = DB.settings;
+  const ogTitle = s.seoOgTitle || EXT.seoOgTitle || '';
+  const ogDesc  = s.seoOgDesc  || EXT.seoOgDesc  || '';
+  const ogImage = s.seoOgImage || EXT.seoOgImage || '';
+  const kw      = s.seoKeywords|| EXT.seoKeywords|| '';
+  const robots  = s.seoRobots  || EXT.seoRobots  || 'index, follow';
+  const canon   = s.seoCanonical||EXT.seoCanonical||'';
+  const jsonLdContent = s.seoJsonLd || EXT.seoJsonLd || generateDefaultJsonLd();
+
+  function ensureMeta(attr, val, content) {
+    let el = document.querySelector(`meta[${attr}="${val}"]`);
+    if (!el) { el = document.createElement('meta'); el.setAttribute(attr, val); document.head.appendChild(el); }
+    if (content) el.setAttribute('content', content);
+  }
+  function ensureLink(rel, href) {
+    let el = document.querySelector(`link[rel="${rel}"]`);
+    if (!el) { el = document.createElement('link'); el.setAttribute('rel', rel); document.head.appendChild(el); }
+    if (href) el.setAttribute('href', href);
+  }
+  if (ogTitle) ensureMeta('property','og:title', ogTitle);
+  if (ogDesc)  ensureMeta('property','og:description', ogDesc);
+  if (ogImage) ensureMeta('property','og:image', ogImage);
+  if (kw)      ensureMeta('name','keywords', kw);
+  ensureMeta('name','robots', robots);
+  if (canon)   ensureLink('canonical', canon);
+  // JSON-LD
   const existingLd = document.getElementById('seo-jsonld-tag');
   if (existingLd) existingLd.remove();
-  const jsonLdContent = EXT.seoJsonLd || generateDefaultJsonLd();
   if (jsonLdContent) {
     const script = document.createElement('script');
     script.type = 'application/ld+json';
@@ -3298,9 +3383,8 @@ async function saveSettings(){
   const newEmail=document.getElementById('s-new-email').value.trim();
   const newPass=document.getElementById('s-new-pass').value;
   DB.settings={...DB.settings,phone:document.getElementById('s-phone').value,whatsapp:document.getElementById('s-whatsapp').value.replace(/[^0-9]/g,''),telegram:document.getElementById('s-telegram').value,address:document.getElementById('s-address').value,hours:document.getElementById('s-hours').value,mapUrl:document.getElementById('s-mapurl').value,tagline:document.getElementById('s-tagline').value,herodesc:document.getElementById('s-herodesc').value,about1:document.getElementById('s-about1').value,about2:document.getElementById('s-about2').value,about3:document.getElementById('s-about3').value,heroImg,aboutImg,adminEmail:newEmail||DB.settings.adminEmail,adminPass:newPass||DB.settings.adminPass,introLogo:document.getElementById('s-intro-logo').value.trim()||DEFAULT_DATA.settings.introLogo,introSub:document.getElementById('s-intro-sub').value.trim()||DEFAULT_DATA.settings.introSub,openTime:document.getElementById('s-open-time').value||'',closeTime:document.getElementById('s-close-time').value||'',tablesCount:parseInt(document.getElementById('s-tables-count').value)||10,metaTitle:document.getElementById('s-meta-title').value.trim()||DEFAULT_DATA.settings.metaTitle,metaDesc:document.getElementById('s-meta-desc').value.trim()||DEFAULT_DATA.settings.metaDesc};
-  // Save hero eyebrow to extended settings
-  EXT.heroEyebrow = document.getElementById('s-hero-eyebrow').value.trim() || EXT_DEFAULTS.heroEyebrow;
-  saveExtSettings();
+  // Hero eyebrow is part of DB.settings, saved via saveSettingsOnly → saveExtToSupabase
+  DB.settings.heroEyebrow = document.getElementById('s-hero-eyebrow').value.trim() || EXT_DEFAULTS.heroEyebrow;
   await saveSettingsOnly(DB.settings);
   applyAll();
   showToast('✅ Настройки сохранены!');
@@ -3309,71 +3393,74 @@ async function saveSettings(){
 
 // ─── FOOTER SETTINGS ───
 function loadFooterForm() {
-  document.getElementById('fs-logo').value = EXT.footerLogo || EXT_DEFAULTS.footerLogo;
-  document.getElementById('fs-tagline').value = EXT.footerTagline || EXT_DEFAULTS.footerTagline;
-  document.getElementById('fs-copy').value = EXT.footerCopy || EXT_DEFAULTS.footerCopy;
-  document.getElementById('fs-nav1').value = EXT.fsNav1 || EXT_DEFAULTS.fsNav1;
-  document.getElementById('fs-nav2').value = EXT.fsNav2 || EXT_DEFAULTS.fsNav2;
-  document.getElementById('fs-nav3').value = EXT.fsNav3 || EXT_DEFAULTS.fsNav3;
-  document.getElementById('fs-nav4').value = EXT.fsNav4 || EXT_DEFAULTS.fsNav4;
-  document.getElementById('fs-nav5').value = EXT.fsNav5 || EXT_DEFAULTS.fsNav5;
+  const s = DB.settings;
+  document.getElementById('fs-logo').value    = s.footerLogo    || EXT_DEFAULTS.footerLogo;
+  document.getElementById('fs-tagline').value = s.footerTagline || EXT_DEFAULTS.footerTagline;
+  document.getElementById('fs-copy').value    = s.footerCopy    || EXT_DEFAULTS.footerCopy;
+  document.getElementById('fs-nav1').value = s.fsNav1 || EXT_DEFAULTS.fsNav1;
+  document.getElementById('fs-nav2').value = s.fsNav2 || EXT_DEFAULTS.fsNav2;
+  document.getElementById('fs-nav3').value = s.fsNav3 || EXT_DEFAULTS.fsNav3;
+  document.getElementById('fs-nav4').value = s.fsNav4 || EXT_DEFAULTS.fsNav4;
+  document.getElementById('fs-nav5').value = s.fsNav5 || EXT_DEFAULTS.fsNav5;
 }
-function saveFooterSettings() {
-  EXT.footerLogo = document.getElementById('fs-logo').value.trim() || EXT_DEFAULTS.footerLogo;
-  EXT.footerTagline = document.getElementById('fs-tagline').value.trim() || EXT_DEFAULTS.footerTagline;
-  EXT.footerCopy = document.getElementById('fs-copy').value.trim() || EXT_DEFAULTS.footerCopy;
-  EXT.fsNav1 = document.getElementById('fs-nav1').value.trim() || EXT_DEFAULTS.fsNav1;
-  EXT.fsNav2 = document.getElementById('fs-nav2').value.trim() || EXT_DEFAULTS.fsNav2;
-  EXT.fsNav3 = document.getElementById('fs-nav3').value.trim() || EXT_DEFAULTS.fsNav3;
-  EXT.fsNav4 = document.getElementById('fs-nav4').value.trim() || EXT_DEFAULTS.fsNav4;
-  EXT.fsNav5 = document.getElementById('fs-nav5').value.trim() || EXT_DEFAULTS.fsNav5;
-  saveExtSettings();
+async function saveFooterSettings() {
+  DB.settings.footerLogo    = document.getElementById('fs-logo').value.trim()    || EXT_DEFAULTS.footerLogo;
+  DB.settings.footerTagline = document.getElementById('fs-tagline').value.trim() || EXT_DEFAULTS.footerTagline;
+  DB.settings.footerCopy    = document.getElementById('fs-copy').value.trim()    || EXT_DEFAULTS.footerCopy;
+  DB.settings.fsNav1 = document.getElementById('fs-nav1').value.trim() || EXT_DEFAULTS.fsNav1;
+  DB.settings.fsNav2 = document.getElementById('fs-nav2').value.trim() || EXT_DEFAULTS.fsNav2;
+  DB.settings.fsNav3 = document.getElementById('fs-nav3').value.trim() || EXT_DEFAULTS.fsNav3;
+  DB.settings.fsNav4 = document.getElementById('fs-nav4').value.trim() || EXT_DEFAULTS.fsNav4;
+  DB.settings.fsNav5 = document.getElementById('fs-nav5').value.trim() || EXT_DEFAULTS.fsNav5;
+  await saveExtToSupabase(DB.settings);
   applyExtSettings();
   showToast('✅ Footer сохранён!');
 }
 
 // ─── HAMBURGER MENU SETTINGS ───
 function loadHamburgerForm() {
-  document.getElementById('hm-nav1').value = EXT.hmNav1 || EXT_DEFAULTS.hmNav1;
-  document.getElementById('hm-nav2').value = EXT.hmNav2 || EXT_DEFAULTS.hmNav2;
-  document.getElementById('hm-nav3').value = EXT.hmNav3 || EXT_DEFAULTS.hmNav3;
-  document.getElementById('hm-nav4').value = EXT.hmNav4 || EXT_DEFAULTS.hmNav4;
-  document.getElementById('hm-nav5').value = EXT.hmNav5 || EXT_DEFAULTS.hmNav5;
-  document.getElementById('hm-call').value = EXT.hmCall || EXT_DEFAULTS.hmCall;
-  document.getElementById('hm-wa').value = EXT.hmWa || EXT_DEFAULTS.hmWa;
+  const s = DB.settings;
+  document.getElementById('hm-nav1').value = s.hmNav1 || EXT_DEFAULTS.hmNav1;
+  document.getElementById('hm-nav2').value = s.hmNav2 || EXT_DEFAULTS.hmNav2;
+  document.getElementById('hm-nav3').value = s.hmNav3 || EXT_DEFAULTS.hmNav3;
+  document.getElementById('hm-nav4').value = s.hmNav4 || EXT_DEFAULTS.hmNav4;
+  document.getElementById('hm-nav5').value = s.hmNav5 || EXT_DEFAULTS.hmNav5;
+  document.getElementById('hm-call').value = s.hmCall || EXT_DEFAULTS.hmCall;
+  document.getElementById('hm-wa').value   = s.hmWa   || EXT_DEFAULTS.hmWa;
 }
-function saveHamburgerSettings() {
-  EXT.hmNav1 = document.getElementById('hm-nav1').value.trim() || EXT_DEFAULTS.hmNav1;
-  EXT.hmNav2 = document.getElementById('hm-nav2').value.trim() || EXT_DEFAULTS.hmNav2;
-  EXT.hmNav3 = document.getElementById('hm-nav3').value.trim() || EXT_DEFAULTS.hmNav3;
-  EXT.hmNav4 = document.getElementById('hm-nav4').value.trim() || EXT_DEFAULTS.hmNav4;
-  EXT.hmNav5 = document.getElementById('hm-nav5').value.trim() || EXT_DEFAULTS.hmNav5;
-  EXT.hmCall = document.getElementById('hm-call').value.trim() || EXT_DEFAULTS.hmCall;
-  EXT.hmWa = document.getElementById('hm-wa').value.trim() || EXT_DEFAULTS.hmWa;
-  saveExtSettings();
+async function saveHamburgerSettings() {
+  DB.settings.hmNav1 = document.getElementById('hm-nav1').value.trim() || EXT_DEFAULTS.hmNav1;
+  DB.settings.hmNav2 = document.getElementById('hm-nav2').value.trim() || EXT_DEFAULTS.hmNav2;
+  DB.settings.hmNav3 = document.getElementById('hm-nav3').value.trim() || EXT_DEFAULTS.hmNav3;
+  DB.settings.hmNav4 = document.getElementById('hm-nav4').value.trim() || EXT_DEFAULTS.hmNav4;
+  DB.settings.hmNav5 = document.getElementById('hm-nav5').value.trim() || EXT_DEFAULTS.hmNav5;
+  DB.settings.hmCall = document.getElementById('hm-call').value.trim() || EXT_DEFAULTS.hmCall;
+  DB.settings.hmWa   = document.getElementById('hm-wa').value.trim()   || EXT_DEFAULTS.hmWa;
+  await saveExtToSupabase(DB.settings);
   applyExtSettings();
   showToast('✅ Гамбургер меню сохранено!');
 }
 
 // ─── SEO SETTINGS ───
 function loadSeoForm() {
-  document.getElementById('seo-og-title').value = EXT.seoOgTitle || '';
-  document.getElementById('seo-og-desc').value = EXT.seoOgDesc || '';
-  document.getElementById('seo-og-image').value = EXT.seoOgImage || '';
-  document.getElementById('seo-keywords').value = EXT.seoKeywords || '';
-  document.getElementById('seo-robots').value = EXT.seoRobots || 'index, follow';
-  document.getElementById('seo-canonical').value = EXT.seoCanonical || '';
-  document.getElementById('seo-jsonld').value = EXT.seoJsonLd || '';
+  const s = DB.settings;
+  document.getElementById('seo-og-title').value  = s.seoOgTitle  || '';
+  document.getElementById('seo-og-desc').value   = s.seoOgDesc   || '';
+  document.getElementById('seo-og-image').value  = s.seoOgImage  || '';
+  document.getElementById('seo-keywords').value  = s.seoKeywords || '';
+  document.getElementById('seo-robots').value    = s.seoRobots   || 'index, follow';
+  document.getElementById('seo-canonical').value = s.seoCanonical|| '';
+  document.getElementById('seo-jsonld').value    = s.seoJsonLd   || '';
 }
-function saveSeoSettings() {
-  EXT.seoOgTitle = document.getElementById('seo-og-title').value.trim();
-  EXT.seoOgDesc = document.getElementById('seo-og-desc').value.trim();
-  EXT.seoOgImage = document.getElementById('seo-og-image').value.trim();
-  EXT.seoKeywords = document.getElementById('seo-keywords').value.trim();
-  EXT.seoRobots = document.getElementById('seo-robots').value || 'index, follow';
-  EXT.seoCanonical = document.getElementById('seo-canonical').value.trim();
-  EXT.seoJsonLd = document.getElementById('seo-jsonld').value.trim();
-  saveExtSettings();
+async function saveSeoSettings() {
+  DB.settings.seoOgTitle   = document.getElementById('seo-og-title').value.trim();
+  DB.settings.seoOgDesc    = document.getElementById('seo-og-desc').value.trim();
+  DB.settings.seoOgImage   = document.getElementById('seo-og-image').value.trim();
+  DB.settings.seoKeywords  = document.getElementById('seo-keywords').value.trim();
+  DB.settings.seoRobots    = document.getElementById('seo-robots').value || 'index, follow';
+  DB.settings.seoCanonical = document.getElementById('seo-canonical').value.trim();
+  DB.settings.seoJsonLd    = document.getElementById('seo-jsonld').value.trim();
+  await saveExtToSupabase(DB.settings);
   applySeoMeta();
   showToast('✅ SEO настройки сохранены!');
 }
